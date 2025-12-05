@@ -192,3 +192,21 @@ library
     scientific >=0.3 && <0.4,
     http-api-data >=0.4 && <0.7,
     unordered-containers >=0.2.10.0 && <0.3
+
+test-suite discord-haskell-tests
+  type:                exitcode-stdio-1.0
+  main-is:             Spec.hs
+  hs-source-dirs:      test
+  default-language:    Haskell2010
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+  other-modules:
+      Discord.Types.ScheduledEventsSpec
+    , Discord.Types.UserSpec
+    , Discord.Types.ChannelSpec
+  build-depends:
+      base >= 4.14 && < 5
+    , discord-haskell
+    , hspec >= 2.7 && < 2.12
+    , aeson >= 2.0 && < 2.3
+    , text >= 1.2 && < 3
+    , bytestring >= 0.10 && < 0.13
