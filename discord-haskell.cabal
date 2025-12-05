@@ -39,9 +39,10 @@ common warnings
     -fno-warn-unused-record-wildcards
 
 executable ping-pong
+  import:              warnings
   main-is:             ping-pong.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils
@@ -51,9 +52,10 @@ executable ping-pong
                      , discord-haskell
 
 executable interaction-commands
+  import:              warnings
   main-is:             interaction-commands.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils
@@ -64,9 +66,10 @@ executable interaction-commands
                      , bytestring
 
 executable interaction-commands-simple
+  import:              warnings
   main-is:             interaction-commands-simple.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils
@@ -76,9 +79,10 @@ executable interaction-commands-simple
                      , discord-haskell
 
 executable cache
+  import:              warnings
   main-is:             cache.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils
@@ -88,9 +92,10 @@ executable cache
                      , discord-haskell
 
 executable gateway
+  import:              warnings
   main-is:             gateway.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils
@@ -100,9 +105,10 @@ executable gateway
                      , discord-haskell
 
 executable rest-without-gateway
+  import:              warnings
   main-is:             rest-without-gateway.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils
@@ -112,9 +118,10 @@ executable rest-without-gateway
                      , discord-haskell
 
 executable state-counter
+  import:              warnings
   main-is:             state-counter.hs
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-type-defaults -fno-warn-unused-record-wildcards -threaded
+  ghc-options:         -threaded
   hs-source-dirs:      examples
   other-modules:
     ExampleUtils

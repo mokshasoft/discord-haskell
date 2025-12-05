@@ -6,7 +6,6 @@
 import Control.Monad (when)
 import qualified Data.ByteString as B
 import Data.Char (isDigit)
-import Data.Functor ((<&>))
 import Data.List (transpose)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
@@ -81,10 +80,9 @@ newExampleSlashCommand =
   createChatInput
     "subtest"
     "testing out subcommands"
-    >>= \d ->
-      Just $
-        d
-          { createOptions =
+    >>= \case
+      d@CreateApplicationCommandChatInput {} ->
+        Just $ d { createOptions =
               Just
                 ( OptionsSubcommands
                     [ OptionSubcommandGroup
@@ -195,6 +193,7 @@ newExampleSlashCommand =
                     ]
                 )
           }
+      _ -> Nothing  -- createChatInput always returns ChatInput, but handle other cases
 
 -- | An example slash command.
 exampleSlashCommand :: Maybe CreateApplicationCommand
@@ -202,23 +201,25 @@ exampleSlashCommand =
   createChatInput
     "test"
     "here is a description"
-    >>= \cac ->
-      return $
-        cac
-          { createOptions =
-              Just $
-                OptionsValues
-                  [ OptionValueString
-                      "randominput"
-                      Nothing
-                      "I shall not"
-                      Nothing
-                      True
-                      (Right [Choice "firstOpt" Nothing "yay", Choice "secondOpt" Nothing "nay"])
-                      Nothing
-                      Nothing
-                  ]
-          }
+    >>= \case
+      cac@CreateApplicationCommandChatInput {} ->
+        return $
+          cac
+            { createOptions =
+                Just $
+                  OptionsValues
+                    [ OptionValueString
+                        "randominput"
+                        Nothing
+                        "I shall not"
+                        Nothing
+                        True
+                        (Right [Choice "firstOpt" Nothing "yay", Choice "secondOpt" Nothing "nay"])
+                        Nothing
+                        Nothing
+                    ]
+            }
+      _ -> Nothing  -- createChatInput always returns ChatInput, but handle other cases
 
 exampleInteractionResponse :: OptionsData -> InteractionResponse
 exampleInteractionResponse (OptionsDataValues [OptionDataValueString {optionDataValueString = s}]) =
@@ -453,19 +454,27 @@ processTicTacToe _ _ = [interactionResponseMessageBasic "Sorry, I couldn't under
 checkTicTacToe :: [ActionRow] -> Bool
 checkTicTacToe xs = checkRows unwrapped || checkRows unwrappedT || checkRows [diagonal unwrapped, diagonal (reverse <$> unwrapped)]
   where
-    checkRows = any (\cbs -> all (\cb -> cb == head cbs && cb /= ButtonStyleSecondary) cbs)
-    unwrapped = (\(ActionRowButtons cbs) -> (\Button {buttonStyle = style} -> style) <$> cbs) <$> xs
+    checkRows = any (\cbs -> case cbs of
+      (first:rest) -> all (\cb -> cb == first && cb /= ButtonStyleSecondary) rest
+      [] -> False)
+    unwrapped = unwrapRow <$> xs
+    unwrapRow (ActionRowButtons cbs) = getButtonStyle <$> cbs
+    unwrapRow (ActionRowSelectMenu _) = []
+    getButtonStyle Button {buttonStyle = style} = style
+    getButtonStyle (ButtonUrl {}) = ButtonStyleSecondary  -- Treat URL buttons as neutral
     unwrappedT = transpose unwrapped
     diagonal [] = []
     diagonal ([] : _) = []
-    diagonal (ys : yss) = head ys : diagonal (tail <$> yss)
+    diagonal ((y:ys) : yss) = y : diagonal (drop 1 <$> (ys : yss))
 
 updateTicTacToe :: Maybe (T.Text, Bool) -> [ActionRow] -> [ActionRow]
 updateTicTacToe Nothing _ = (\y -> ActionRowButtons $ (\x -> Button (T.pack $ "ttt " <> show x <> show y) False ButtonStyleSecondary (Just "[ ]") Nothing) <$> [0 .. 4]) <$> [0 .. 4]
 updateTicTacToe (Just (tttxy, isFirst)) car
   | not (checkIsValid tttxy) = car
-  | otherwise = (\(ActionRowButtons cbs) -> ActionRowButtons (changeIf <$> cbs)) <$> car
+  | otherwise = updateRow <$> car
   where
+    updateRow (ActionRowButtons cbs) = ActionRowButtons (changeIf <$> cbs)
+    updateRow ar = ar  -- Leave select menus unchanged
     checkIsValid tttxy' = T.length tttxy' == 6 && all isDigit [T.index tttxy' 4, T.index tttxy' 5]
     getxy tttxy' = (T.index tttxy' 4, T.index tttxy' 5)
     (style, symbol) = if isFirst then (ButtonStyleSuccess, "[X]") else (ButtonStyleDanger, "[O]")

@@ -34,7 +34,10 @@ main = do
   Right cs <- writeRestCall restChan (R.GetGuildChannels testserverid)
 
   -- ONE REST CALL
-  resp <- writeRestCall restChan (R.CreateMessage (channelId (head $ filter isTextChannel cs)) "Message")
+  let textChannelId = case filter isTextChannel cs of
+        (c:_) -> channelId c
+        []    -> error "No text channel found in guild"
+  resp <- writeRestCall restChan (R.CreateMessage textChannelId "Message")
   case resp of
     Right msg -> print $ "created message: " <> show msg
     Left (RestCallInternalErrorCode _code _status _body) -> print "4XX style http error code"

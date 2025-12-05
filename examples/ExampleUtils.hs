@@ -22,7 +22,9 @@ getGuildId = do
 actionWithChannelId :: GuildId -> (ChannelId -> DiscordHandler a) -> DiscordHandler a
 actionWithChannelId testserverid f = do
   Right chans <- restCall $ R.GetGuildChannels testserverid
-  (f . channelId) (head (filter isTextChannel chans))
+  case filter isTextChannel chans of
+    (c:_) -> f (channelId c)
+    []    -> error "No text channel found in guild"
   where
     isTextChannel :: Channel -> Bool
     isTextChannel ChannelText {} = True
