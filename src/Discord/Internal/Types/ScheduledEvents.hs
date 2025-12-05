@@ -218,7 +218,7 @@ instance FromJSON ScheduledEvent where
                                           secrea
                                           seuc
                                           seim
-        _ -> error "unreachable"
+        _ -> fail $ "Unknown ScheduledEvent entity_type: " <> show setype
     )
 
 -- | The privacy level of a scheduled event
@@ -388,14 +388,14 @@ instance FromJSON CreateScheduledEventData where
           csemeta <- v .: "entity_metadata"
           cseloc  <- withObject "entity_metadata" (.: "location") csemeta
           cseet   <- v .: "scheduled_end_time"
-          return $ CreateScheduledEventDataVoice cseloc
+          return $ CreateScheduledEventDataExternal cseloc
                                                  csename
                                                  csepl
                                                  csest
                                                  cseet
                                                  csedesc
                                                  cseimg
-        _ -> error "unreachable"
+        _ -> fail $ "Unknown CreateScheduledEventData entity_type: " <> show t
     )
 
 
