@@ -122,3 +122,54 @@ The `warnings` common stanza enables strict warnings:
 - `-Wincomplete-record-updates`
 
 All library code, executables, and tests import this stanza.
+
+## JSON Roundtrip Test Coverage
+
+### Tested Types (with property-based roundtrip tests)
+
+**User.hs**: User, GuildMember
+**Channel.hs**: Overwrite
+**ScheduledEvents.hs**: ScheduledEvent, ScheduledEventPrivacyLevel, ScheduledEventStatus
+**Embed.hs**: Embed, EmbedFooter, EmbedImage, EmbedThumbnail, EmbedVideo, EmbedProvider, EmbedAuthor, EmbedField
+**AutoModeration.hs**: AutoModerationRule, AutoModerationRuleEventType, AutoModerationRuleTriggerType, AutoModerationRuleTriggerMetadata, AutoModerationRuleTriggerMetadataPreset, AutoModerationRuleAction, AutoModerationRuleActionType, AutoModerationRuleActionMetadata
+**Color.hs**: DiscordColor (RGB only - named colors don't roundtrip)
+
+### Untested Types (have both ToJSON and FromJSON)
+
+**Channel.hs** (14 types):
+- Simple: Attachment, Nonce, MessageReference, MessageActivity, MessageReaction, MessageFlags, MessageInteraction, ThreadMetadata, ThreadMember, ThreadMemberUpdateFields
+- Enums: MessageType, MessageActivityType
+- Complex: Channel, Message
+
+**Components.hs** (7 types):
+- Simple: SelectOption, TextInput
+- Enum: ButtonStyle
+- Complex: ActionRow, Button, SelectMenu, SelectMenuData
+
+**Emoji.hs** (3 types):
+- Simple: Emoji, StickerItem
+- Enum: StickerFormatType
+
+**ApplicationCommands.hs** (6 types):
+- Simple: GuildApplicationCommandPermissions, ApplicationCommandPermissions
+- Complex: Options, OptionSubcommandOrGroup, OptionSubcommand, OptionValue
+
+**ScheduledEvents.hs** (4 types):
+- Enum: ScheduledEventType
+- Complex: CreateScheduledEventImage, CreateScheduledEventData, ModifyScheduledEventData
+
+**Guild.hs** (2 types):
+- Complex: Activity, GuildWidget
+
+**Prelude.hs** (2 types):
+- Simple: Snowflake
+- Enum: ChannelTypeOption
+
+**Events.hs** (1 type):
+- Complex: AutoModerationActionExecuteInfo
+
+**Gateway.hs** (1 type):
+- Complex: GatewaySendable
+
+**Interactions.hs** (1 type):
+- Complex: ResolvedData
