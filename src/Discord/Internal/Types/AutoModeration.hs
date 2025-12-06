@@ -40,7 +40,7 @@ instance FromJSON AutoModerationRule where
 
 instance ToJSON AutoModerationRule where
   toJSON AutoModerationRule{..} = object
-    [ ("id", toJSON autoModerationRuleGuildId)
+    [ ("id", toJSON autoModerationRuleId)
     , ("guild_id", toJSON autoModerationRuleGuildId)
     , ("name", toJSON autoModerationRuleName)
     , ("creator_id", toJSON autoModerationRuleCreatorId)
@@ -133,8 +133,8 @@ instance FromJSON AutoModerationRuleTriggerMetadataPreset where
 
 instance ToJSON AutoModerationRuleTriggerMetadataPreset where
   toJSON Profanity      = Number 1
-  toJSON SexualContent  = Number 2
-  toJSON Slurs          = Number 3
+  toJSON SexualContent  = Number 3
+  toJSON Slurs          = Number 4
 
 data AutoModerationRuleAction = AutoModerationRuleAction
   { autoModerationRuleActionType      :: AutoModerationRuleActionType
@@ -168,8 +168,8 @@ instance FromJSON AutoModerationRuleActionType where
 
 instance ToJSON AutoModerationRuleActionType where
   toJSON BlockMessage     = Number 1
-  toJSON SendAlertMessage = Number 2
-  toJSON Timeout          = Number 3
+  toJSON SendAlertMessage = Number 3
+  toJSON Timeout          = Number 4
 
 data AutoModerationRuleActionMetadata = AutoModerationRuleActionMetadata
   { autoModerationRuleActionMetadataChannelId       :: Maybe ChannelId

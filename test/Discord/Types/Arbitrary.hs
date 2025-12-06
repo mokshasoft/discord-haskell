@@ -22,6 +22,9 @@ import Discord.Internal.Types.Prelude
 import Discord.Internal.Types.Channel (Overwrite(..))
 import Discord.Internal.Types.User (User(..), GuildMember(..))
 import Discord.Internal.Types.ScheduledEvents
+import Discord.Internal.Types.Embed
+import Discord.Internal.Types.Color (DiscordColor(..))
+import Discord.Internal.Types.AutoModeration
 
 
 -- =============================================================================
@@ -54,6 +57,20 @@ instance Arbitrary Overwrite where
 -- | Generate permission bit strings (Discord uses string-encoded integers)
 genPermissionBits :: Gen T.Text
 genPermissionBits = T.pack . show <$> (arbitrary :: Gen Word64)
+
+
+-- =============================================================================
+-- Color types
+-- =============================================================================
+
+instance Arbitrary DiscordColor where
+  -- Note: Only RGB colors roundtrip correctly because FromJSON always
+  -- converts to DiscordColorRGB via convertToRGB. Named colors like
+  -- DiscordColorAqua become DiscordColorRGB 26 188 156 after roundtrip.
+  arbitrary = DiscordColorRGB
+    <$> chooseInteger (0, 255)
+    <*> chooseInteger (0, 255)
+    <*> chooseInteger (0, 255)
 
 
 -- =============================================================================
@@ -196,4 +213,132 @@ genLocation :: Gen T.Text
 genLocation = do
   len <- chooseInt (1, 100)
   T.pack <$> vectorOf len (elements $ ['a'..'z'] ++ ['A'..'Z'] ++ [' ', ','])
+
+
+-- =============================================================================
+-- Embed types
+-- =============================================================================
+
+instance Arbitrary Embed where
+  arbitrary = Embed
+    <$> arbitrary                    -- embedAuthor
+    <*> arbitrary                    -- embedTitle
+    <*> arbitrary                    -- embedUrl
+    <*> arbitrary                    -- embedThumbnail
+    <*> arbitrary                    -- embedDescription
+    <*> listOf arbitrary             -- embedFields
+    <*> arbitrary                    -- embedImage
+    <*> arbitrary                    -- embedFooter
+    <*> arbitrary                    -- embedColor
+    <*> arbitrary                    -- embedTimestamp
+    <*> arbitrary                    -- embedVideo
+    <*> arbitrary                    -- embedProvider
+
+instance Arbitrary EmbedFooter where
+  arbitrary = EmbedFooter
+    <$> genShortText                 -- embedFooterText
+    <*> arbitrary                    -- embedFooterIconUrl
+    <*> arbitrary                    -- embedFooterProxyIconUrl
+
+instance Arbitrary EmbedImage where
+  arbitrary = EmbedImage
+    <$> arbitrary                    -- embedImageUrl
+    <*> arbitrary                    -- embedImageProxyUrl
+    <*> arbitrary                    -- embedImageHeight
+    <*> arbitrary                    -- embedImageWidth
+
+instance Arbitrary EmbedThumbnail where
+  arbitrary = EmbedThumbnail
+    <$> arbitrary                    -- embedThumbnailUrl
+    <*> arbitrary                    -- embedThumbnailProxyUrl
+    <*> arbitrary                    -- embedThumbnailHeight
+    <*> arbitrary                    -- embedThumbnailWidth
+
+instance Arbitrary EmbedVideo where
+  arbitrary = EmbedVideo
+    <$> arbitrary                    -- embedVideoUrl
+    <*> arbitrary                    -- embedVideoProxyUrl
+    <*> arbitrary                    -- embedVideoHeight
+    <*> arbitrary                    -- embedVideoWidth
+
+instance Arbitrary EmbedProvider where
+  arbitrary = EmbedProvider
+    <$> arbitrary                    -- embedProviderName
+    <*> arbitrary                    -- embedProviderUrl
+
+instance Arbitrary EmbedAuthor where
+  arbitrary = EmbedAuthor
+    <$> genShortText                 -- embedAuthorName
+    <*> arbitrary                    -- embedAuthorUrl
+    <*> arbitrary                    -- embedAuthorIconUrl
+    <*> arbitrary                    -- embedAuthorProxyIconUrl
+
+instance Arbitrary EmbedField where
+  arbitrary = EmbedField
+    <$> genShortText                 -- embedFieldName
+    <*> genShortText                 -- embedFieldValue
+    <*> arbitrary                    -- embedFieldInline
+
+-- | Generate short text for embed fields (1-50 chars)
+genShortText :: Gen T.Text
+genShortText = do
+  len <- chooseInt (1, 50)
+  T.pack <$> vectorOf len (elements $ ['a'..'z'] ++ ['A'..'Z'] ++ [' '])
+
+
+-- =============================================================================
+-- AutoModeration types
+-- =============================================================================
+
+instance Arbitrary AutoModerationRule where
+  arbitrary = AutoModerationRule
+    <$> arbitrary                    -- autoModerationRuleId
+    <*> arbitrary                    -- autoModerationRuleGuildId
+    <*> genAlphaNum                  -- autoModerationRuleName
+    <*> arbitrary                    -- autoModerationRuleCreatorId
+    <*> arbitrary                    -- autoModerationRuleEventType
+    <*> arbitrary                    -- autoModerationRuleTriggerType
+    <*> arbitrary                    -- autoModerationRuleTriggerMetadata
+    <*> listOf arbitrary             -- autoModerationRuleActions
+    <*> arbitrary                    -- autoModerationRuleEnabled
+    <*> listOf arbitrary             -- autoModerationRuleExemptRoles
+    <*> listOf arbitrary             -- autoModerationRuleExemptChannels
+
+instance Arbitrary AutoModerationRuleEventType where
+  arbitrary = pure MessageSent
+
+instance Arbitrary AutoModerationRuleTriggerType where
+  arbitrary = elements [Keyword, Spam, KeywordPreset, MentionSpam]
+
+instance Arbitrary AutoModerationRuleTriggerMetadata where
+  arbitrary = AutoModerationRuleTriggerMetadata
+    <$> listOf genAlphaNum           -- keywordFilter
+    <*> listOf genAlphaNum           -- regexPatterns
+    <*> arbitrary                    -- presets
+    <*> listOf genAlphaNum           -- allowList
+    <*> arbitrary                    -- mentionLimit
+    <*> arbitrary                    -- raidProtection
+
+instance Arbitrary AutoModerationRuleTriggerMetadataPreset where
+  arbitrary = elements [Profanity, SexualContent, Slurs]
+
+instance Arbitrary AutoModerationRuleAction where
+  arbitrary = AutoModerationRuleAction
+    <$> arbitrary                    -- actionType
+    <*> arbitrary                    -- actionMetadata
+
+instance Arbitrary AutoModerationRuleActionType where
+  arbitrary = elements [BlockMessage, SendAlertMessage, Timeout]
+
+instance Arbitrary AutoModerationRuleActionMetadata where
+  arbitrary = AutoModerationRuleActionMetadata
+    <$> arbitrary                    -- channelId
+    <*> arbitrary                    -- timeoutDuration
+    <*> (fmap getASCIIString <$> arbitrary)  -- customMessage (ASCII only)
+
+-- | Generate alphanumeric strings for rule names, keywords, etc.
+genAlphaNum :: Gen String
+genAlphaNum = do
+  len <- chooseInt (1, 20)
+  vectorOf len $ elements $ ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9']
 
