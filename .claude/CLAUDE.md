@@ -66,7 +66,8 @@ The test suite uses **hspec** with **QuickCheck** for property-based testing.
 ### Test Types
 
 1. **Property-based roundtrip tests**: Verify `decode (encode x) == Just x` with 100 random values
-2. **Regression unit tests**: Specific test cases for previously-fixed bugs (BUG-001 through BUG-004)
+2. **Regression unit tests**: Specific test cases for previously-fixed bugs (BUG-001 through BUG-008)
+3. **Event coverage tests**: Document which Gateway events are implemented vs official Discord events
 
 ### Adding New Tests
 
@@ -173,3 +174,13 @@ All library code, executables, and tests import this stanza.
 
 **Interactions.hs** (1 type):
 - Complex: ResolvedData
+
+## Gateway Event Coverage
+
+The library implements 43 of 75 official Discord Gateway events (57%). Missing events fall through to `UnknownEvent` and don't cause crashes.
+
+**Tested in**: `test/Discord/Types/EventsSpec.hs`
+
+The test verifies:
+1. Implemented events are documented correctly
+2. Event names match official Discord API (no typos)

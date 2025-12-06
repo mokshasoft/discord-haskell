@@ -12,6 +12,7 @@ import qualified Discord.Types.UserSpec as User
 import qualified Discord.Types.ChannelSpec as Channel
 import qualified Discord.Types.EmbedSpec as Embed
 import qualified Discord.Types.AutoModerationSpec as AutoModeration
+import qualified Discord.Types.EventsSpec as Events
 
 main :: IO ()
 main = hspec $ do
@@ -20,3 +21,4 @@ main = hspec $ do
   describe "Discord.Internal.Types.Channel" Channel.spec
   describe "Discord.Internal.Types.Embed" Embed.spec
   describe "Discord.Internal.Types.AutoModeration" AutoModeration.spec
+  describe "Discord.Internal.Types.Events" Events.spec
