@@ -106,6 +106,7 @@ instance ToJSON ScheduledEvent where
       , "scheduled_start_time" .== scheduledEventStageStartTime
       , "scheduled_end_time"   .=? scheduledEventStageEndTime
       , "privacy_level"        .== scheduledEventStagePrivacyLevel
+      , "status"               .== scheduledEventStageStatus
       , "entity_type"          .== Number 1
       , "entity_id"            .=? scheduledEventStageEntityId
       , "creator"              .=? scheduledEventStageCreator
@@ -122,6 +123,7 @@ instance ToJSON ScheduledEvent where
       , "scheduled_start_time" .== scheduledEventVoiceStartTime
       , "scheduled_end_time"   .=? scheduledEventVoiceEndTime
       , "privacy_level"        .== scheduledEventVoicePrivacyLevel
+      , "status"               .== scheduledEventVoiceStatus
       , "entity_type"          .== Number 2
       , "entity_id"            .=? scheduledEventVoiceEntityId
       , "creator"              .=? scheduledEventVoiceCreator
@@ -137,6 +139,7 @@ instance ToJSON ScheduledEvent where
       , "scheduled_start_time" .== scheduledEventExternalStartTime
       , "scheduled_end_time"   .== scheduledEventExternalEndTime
       , "privacy_level"        .== scheduledEventExternalPrivacyLevel
+      , "status"               .== scheduledEventExternalStatus
       , "entity_type"          .== Number 3
       , "entity_id"            .=? scheduledEventExternalEntityId
       , "creator"              .=? scheduledEventExternalCreator

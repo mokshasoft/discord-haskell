@@ -1,3 +1,8 @@
+-- | Main test entry point using hspec
+--
+-- Tests include:
+--   - Property-based roundtrip tests (decode . encode == Just)
+--   - Regression tests for specific bugs (BUG-001 through BUG-004)
 module Main (main) where
 
 import Test.Hspec

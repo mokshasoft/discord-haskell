@@ -65,6 +65,7 @@ instance ToJSON User where
               , "mfa_enabled" .=? userMfa
               , "banner" .=? userBanner
               , "accent_color" .=? userAccentColor
+              , "locale" .=? userLocale
               , "verified" .=? userVerified
               , "email" .=? userEmail
               , "flags" .=? userFlags

@@ -219,10 +219,14 @@ test-suite discord-haskell-tests
       Discord.Types.ScheduledEventsSpec
     , Discord.Types.UserSpec
     , Discord.Types.ChannelSpec
+    , Discord.Types.Arbitrary
   build-depends:
       base >= 4.14 && < 5
     , discord-haskell
     , hspec >= 2.7 && < 2.12
+    , QuickCheck >= 2.14 && < 2.16
+    , quickcheck-instances >= 0.3 && < 0.4
     , aeson >= 2.0 && < 2.3
     , text >= 1.2 && < 3
+    , time >= 1.9 && < 1.15
     , bytestring >= 0.10 && < 0.13
